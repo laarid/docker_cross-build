@@ -16,7 +16,7 @@ env:
   - ARCH=ppc64el
   - ARCH=s390x
   global:
-    secure: "abqIwyPa3Zed8sJymFYeJkS9Ft3z8DXBs7h0f9c+/8PDxicJd6vo9nczAgWPpjzsMUxXZLG2yom0CmABAt9k6Gb8omuGnR8bDCBENzCnoJjrlIoL2XIR1x51lMrihjlgJ3nuOXWBHScIBCkyT+JCvA206gVoLgx1ueXfLfIrhZSHTB2k6cwvhoXlsC/Gxny2t4waJObC7Pa8Mk0zzCvl5R7VJZzpO17cWVcbX2Wa9rx2Kw3s+wVSm8tC5hFHeE86ZQlrBIbf+JTWf/v9gX3yWOvhEYMM0zTKH6XETDFkcvB9oZPlqW5YvGabaZ7snrwTkvKG9K3eNYJLo+1hHQ8sHyxSQFTImSoeugI4DtRZh92vRL4r7PlvvZHA1m+U/CuJhtv7J9xanI2pRrnYDy7QttXzZBZcrKAt1E3J1IUsHCTvPPcxG560JxsHGtBgW00uhfZO98QntxGKy3c83f057NM4bI2Cv3YaGW7bFsn3Sd8t2N87HZxvZLQ+ym+ON04KdyOoJEjcDDBsyFvd62zpTvZfiD4Co3X3hUD4R2JaCoiTtY27TlEbeLnmrf0C8mZe2a0lx+InlcSUp5/s+GQ48S9qCI7SyOnZB2UkYGK+3ObXeqtbP9D9poJf+LAm2nZQB5rlarXAlOp4P14TbZvQZ+lZbNCCpL3PPgYzdp9fHB4="
+    secure: "XTDt41gNU4Sf+CwSgz2ZAc5LcKPoSf7kYguWnLLdAW3vY4EbXGS8LjsGkedSCDJJVNqYGB3n94QAXtR3zenJn78EW/pWrJMPL2tmp0/C6Ama6TSZpTDNjEReoyT4lBF5J9PruX5sncjoqf+STCp6gab6EaHFSPwDuFiEsOy931NyfypIAkYz8i7L/6R2u5ukiJs88T/J4D1j8Y1qZce/tPOR0GAJN0B3ggsPp0hJ/qhia2el65E1+/T1z1UMsc9/jwPGAu/mJD7qzg4VHSi32XTSOKc2GFkwfK9wSBSRFgdwycQTxgi1M3Q36STnp7qD+wmjcapzGUNYiRkEcy9SB2eUP/Wsdc0lzmmrJeZ9xFpfvOoLh+91Tb7kjiRfuJvLHpoKgvn+CNkCPSqXujdQIk3ZDJ/3hpgof6Ni8NRL2LPf1010oY7XKH0bDiRShVbXG4Xd5hv/FhALdnvNTW/kogOFPYTlGnbU1kgLQitBIRATrvy5WoSEhlrrGJ3QS03llwVytt2WwJhsRKZCeHNuojFdWIZl8ae4wNgV7oWXl2MyBsS/keJMq9ABm2x84Kba1WfpVrEx53Z8EN5vf2CFoyreDmPrq+ncxtINYWDCvtQQ3oA63CSkDwdcLAyM3HkBYiovk9wouPkDnmKuXvnJVw3nzHxPXJQ7poUlIOay7ZM="
 
 branches:
   only: master
@@ -30,15 +30,15 @@ addons:
     - qemu-user-static
 
 script:
-- docker build -t laarid/devel:$ARCH devel/$ARCH
+- docker build -t laarid/cross-build:$ARCH devel/$ARCH
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-  docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
-  docker push laarid/devel:$ARCH;
+    docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
+    docker push laarid/cross-build:$ARCH;
   fi
 
 notifications:
   slack:
     rooms:
-    - secure: "AqxV+PQXnDuLA4jeduqPoFWMTm78CyI3+uGf0aB3YQeZw9vjcM5W7TzozH3MjRnw5JkWxyZGULZJkqklZXRnmJf8ify+6dsd2NeEKB8SEiMwrjaRLwc4/roVCArEJyhhU2o0ZvK/iQitoaC6PBhPcTiockv2eNj7Eqw1krdwnFEwDQ5Qn5ehr6EkjuUd8VdqaUMs/kIGNv7I67Ahg1/a2CHU8W8MmO00B6uZ0UAIDdJhSn5YFNr9wseSKlFXP2aQ9nmyC17q24HMk5rVkkts45Kzp102CPrh9ycZqBsKJjsxUqxfYq2DAq/Tk24AzWKNZQMM1jpwPqom/Tl580TtvfDC1E50LBUtEZweE9dIOtMKQ97TFa/hWrm5l+B4dX9rN8Yy9ifGsxhNmF0PWR8Hj3+kJh4pjfCdGQsvb2OLM30yWSU/SAkAlwZUjeTWvsQ9WVlI8130ltW47AgSfCVwx3inCMZie/fpnpjLBTKIrzpsf6dRvkVRtUIKq3YrpDsmMF7dp/2tj+rDKnq18bHDyPFy9QS0Gls6pIUlKxJZJMXUK/lB3MjC6ByB2kYv+P6Iugt8/F3U2YA8VqrB0QcZpZqxlPGj7awvJqxO6G4i3AEEfpN/KSAPXnx7VKUwLVMmKogKo6P7aQxgIGofo/r/qfRSD2+Qa4HRPolHXmRUvKA="
+    - secure: "Nc5t1c1oCEILiyYYQly9A6IgAgPyv/AL3kjeO42rYYP/tEXdGc2h2ugAqIKLmwHS+XMJkpZ3n/drXo9XaweY7h0jvR1aZqMpHHEikzgdwKsHItcPhwmweruffLU/iGTnQHJOe74Eiw+VoaJnByW1vUxjFDw/M5ex+1qpSPSBNgfBQlxxTO4NWD69WrYi6BMqxsYcYUqC1ioT8zTSMkZ4cWjZEEnJoXYaoFT51gcGBaRHgY2HV6e/9Gpmb3DPGZXXB2pbrNa7G/UofIS/2GJi+NdmPJyAwcmhIdzafpsXd1wotEHIaytSNVbQUFdBcuse1WCOQ3CnzyWYgltkRdZGCBhftjht9p5YmPDSONbAMVP5yQwOCXcQuj7BQS4VxIF1JXsKW1Gg2r/2yuDwp/duCiwKUYdn6eb2/pAlrwuNHa4sHmmRj3+j+23X3XJptCYraLrV3p3LIFXr8/2wdw491lcTknw3mIcMLivASchTb5bzrT6qKOeLdIhr4BJ736Swkkv36S4ChMhuEI7qbbZY3IMxOau7zkThV0kM3kjPCWtugaJIH5KyUccDvFog4Jt8aVQMxZQivY4jAz4MHT4Gyb+1uTcYU0wGqTtYxDamCFnKuY8U/lMDH9LtjOfcIWUhLHjX+0/oM6gO1eBw/bUsQwH/avhfSpsVpyhQXxKDIxs="
