@@ -30,7 +30,7 @@ addons:
     - qemu-user-static
 
 script:
-- docker build -t laarid/cross-build:$ARCH devel/$ARCH
+- docker build -t laarid/cross-build:$ARCH $ARCH
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
