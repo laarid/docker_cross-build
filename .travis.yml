@@ -14,9 +14,15 @@ env:
   - ARCH=mips64el
   - ARCH=mipsel
   - ARCH=ppc64el
+  - ARCH=ppc64el-next SKIP_TAG=1
   - ARCH=s390x
   global:
     secure: "XTDt41gNU4Sf+CwSgz2ZAc5LcKPoSf7kYguWnLLdAW3vY4EbXGS8LjsGkedSCDJJVNqYGB3n94QAXtR3zenJn78EW/pWrJMPL2tmp0/C6Ama6TSZpTDNjEReoyT4lBF5J9PruX5sncjoqf+STCp6gab6EaHFSPwDuFiEsOy931NyfypIAkYz8i7L/6R2u5ukiJs88T/J4D1j8Y1qZce/tPOR0GAJN0B3ggsPp0hJ/qhia2el65E1+/T1z1UMsc9/jwPGAu/mJD7qzg4VHSi32XTSOKc2GFkwfK9wSBSRFgdwycQTxgi1M3Q36STnp7qD+wmjcapzGUNYiRkEcy9SB2eUP/Wsdc0lzmmrJeZ9xFpfvOoLh+91Tb7kjiRfuJvLHpoKgvn+CNkCPSqXujdQIk3ZDJ/3hpgof6Ni8NRL2LPf1010oY7XKH0bDiRShVbXG4Xd5hv/FhALdnvNTW/kogOFPYTlGnbU1kgLQitBIRATrvy5WoSEhlrrGJ3QS03llwVytt2WwJhsRKZCeHNuojFdWIZl8ae4wNgV7oWXl2MyBsS/keJMq9ABm2x84Kba1WfpVrEx53Z8EN5vf2CFoyreDmPrq+ncxtINYWDCvtQQ3oA63CSkDwdcLAyM3HkBYiovk9wouPkDnmKuXvnJVw3nzHxPXJQ7poUlIOay7ZM="
+
+matrix:
+  fast_finish: true
+  allow_failures:
+  - env: ARCH=ppc64el-next SKIP_TAG=1
 
 branches:
   only: master
@@ -30,10 +36,23 @@ addons:
     - qemu-user-static
 
 script:
+- dpkg -s qemu-user-static
 - docker build -t laarid/cross-build:$ARCH $ARCH
+- O=$(docker run --rm laarid/cross-build:$ARCH /bin/bash -c 'ls /usr/bin/qemu-*');
+  if [ -n "$O" ]; then
+    docker run --rm laarid/cross-build:$ARCH $O --version;
+  fi
+- |
+  git clone -o laarid https://github.com/laarid/package_laarid-meta.git \
+    ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}/laarid-meta;
+  docker run --rm \
+    --volume ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}:${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}} \
+    --workdir ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}/laarid-meta \
+    laarid/cross-build:$ARCH \
+    debuild -i -us -uc -b
 
 after_success:
-- if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+- if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${SKIP_TAG}" ]; then
     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
     docker push laarid/cross-build:$ARCH;
   fi

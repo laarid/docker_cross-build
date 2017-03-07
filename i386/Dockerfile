@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/buildpack-deps:stretch-i386
+FROM vicamo/debian:stretch-i386
 
 ENV LAARID_USER=laarid
 ENV LAARID_HOME=/home/${LAARID_USER}
@@ -8,29 +8,21 @@ RUN apt-get update -qq \
 	&& apt-get upgrade -y \
 	&& apt-get install --no-install-recommends -y \
 		apt-transport-https \
-		autoconf-archive \
-		autopoint \
 		build-essential \
+		ca-certificates \
 		ccache \
 		devscripts \
-		dh-autoreconf \
-		dirmngr \
 		equivs \
-		google-mock \
-		gnupg \
+		git \
 		libfile-fcntllock-perl \
-		libgtest-dev \
 		lintian \
 		sudo \
-	&& apt-get clean \
-	&& rm -f /var/lib/apt/lists/*_dists_*
+	&& apt-get install --no-install-recommends -y \
+		google-mock \
+		libgtest-dev
 
-# Hard code DNS entries for mips/mipsel.
-# See https://github.com/laarid/docker/issues/12
-RUN (echo "deb [allow-insecure=yes] https://dl.bintray.com/laarid/main stretch main" | tee /etc/apt/sources.list.d/bintray.list) \
-	&& (echo "75.126.118.188 dl.bintray.com" | tee -a /etc/hosts) \
-	&& apt-get update -qq \
-	&& rm -f /var/lib/apt/lists/*_dists_*
+RUN (echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/main stretch main" | tee /etc/apt/sources.list.d/bintray.list) \
+	&& apt-get update -qq
 
 # Cannot fetch key on mips/mipsel.
 # See https://github.com/laarid/docker/issues/11
