@@ -5,24 +5,18 @@ services:
 
 env:
   matrix:
-  - ARCH=amd64
-  - ARCH=arm64
-  - ARCH=armel
-  - ARCH=armhf
-  - ARCH=i386
-  - ARCH=mips
-  - ARCH=mips64el
-  - ARCH=mipsel
-  - ARCH=ppc64el
-  - ARCH=ppc64el-next SKIP_TAG=1
-  - ARCH=s390x
+  - JOB_DOCKERFILE_DIR=amd64 JOB_ARCH=amd64
+  - JOB_DOCKERFILE_DIR=arm64 JOB_ARCH=arm64 JOB_QEMU_ARCH=aarch64
+  - JOB_DOCKERFILE_DIR=armel JOB_ARCH=armel JOB_QEMU_ARCH=arm
+  - JOB_DOCKERFILE_DIR=armhf JOB_ARCH=armhf JOB_QEMU_ARCH=arm
+  - JOB_DOCKERFILE_DIR=i386 JOB_ARCH=i386
+  - JOB_DOCKERFILE_DIR=mips JOB_ARCH=mips JOB_QEMU_ARCH=mips
+  - JOB_DOCKERFILE_DIR=mips64el JOB_ARCH=mips64el JOB_QEMU_ARCH=mips64el
+  - JOB_DOCKERFILE_DIR=mipsel JOB_ARCH=mipsel JOB_QEMU_ARCH=mipsel
+  - JOB_DOCKERFILE_DIR=ppc64el JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le
+  - JOB_DOCKERFILE_DIR=s390x JOB_ARCH=s390x JOB_QEMU_ARCH=s390x
   global:
     secure: "XTDt41gNU4Sf+CwSgz2ZAc5LcKPoSf7kYguWnLLdAW3vY4EbXGS8LjsGkedSCDJJVNqYGB3n94QAXtR3zenJn78EW/pWrJMPL2tmp0/C6Ama6TSZpTDNjEReoyT4lBF5J9PruX5sncjoqf+STCp6gab6EaHFSPwDuFiEsOy931NyfypIAkYz8i7L/6R2u5ukiJs88T/J4D1j8Y1qZce/tPOR0GAJN0B3ggsPp0hJ/qhia2el65E1+/T1z1UMsc9/jwPGAu/mJD7qzg4VHSi32XTSOKc2GFkwfK9wSBSRFgdwycQTxgi1M3Q36STnp7qD+wmjcapzGUNYiRkEcy9SB2eUP/Wsdc0lzmmrJeZ9xFpfvOoLh+91Tb7kjiRfuJvLHpoKgvn+CNkCPSqXujdQIk3ZDJ/3hpgof6Ni8NRL2LPf1010oY7XKH0bDiRShVbXG4Xd5hv/FhALdnvNTW/kogOFPYTlGnbU1kgLQitBIRATrvy5WoSEhlrrGJ3QS03llwVytt2WwJhsRKZCeHNuojFdWIZl8ae4wNgV7oWXl2MyBsS/keJMq9ABm2x84Kba1WfpVrEx53Z8EN5vf2CFoyreDmPrq+ncxtINYWDCvtQQ3oA63CSkDwdcLAyM3HkBYiovk9wouPkDnmKuXvnJVw3nzHxPXJQ7poUlIOay7ZM="
-
-matrix:
-  fast_finish: true
-  allow_failures:
-  - env: ARCH=ppc64el-next SKIP_TAG=1
 
 branches:
   only: master
@@ -36,25 +30,27 @@ addons:
     - qemu-user-static
 
 script:
-- dpkg -s qemu-user-static
-- docker build -t laarid/cross-build:$ARCH $ARCH
-- O=$(docker run --rm laarid/cross-build:$ARCH /bin/bash -c 'ls /usr/bin/qemu-*');
-  if [ -n "$O" ]; then
-    docker run --rm laarid/cross-build:$ARCH $O --version;
+- if [ -n "${JOB_QEMU_ARCH}" ]; then
+    dpkg -s qemu-user-static;
+    if [ ! -f "${JOB_DOCKERFILE_DIR}/qemu-${JOB_QEMU_ARCH}-static" ]; then
+      docker create --name devel_container laarid/devel:${JOB_ARCH};
+      docker cp devel_container:/usr/bin/qemu-${JOB_QEMU_ARCH}-static ${JOB_DOCKERFILE_DIR};
+      docker rm devel_container;
+    fi;
+    ${JOB_DOCKERFILE_DIR}/qemu-${JOB_QEMU_ARCH}-static --version;
   fi
-- |
-  git clone -o laarid https://github.com/laarid/package_laarid-meta.git \
-    ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}/laarid-meta;
-  docker run --rm \
-    --volume ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}:${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}} \
-    --workdir ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}/laarid-meta \
-    laarid/cross-build:$ARCH \
-    debuild -i -us -uc -b
+- docker build -t laarid/cross-build:${JOB_ARCH} ${JOB_DOCKERFILE_DIR}
+- git clone -o laarid https://github.com/laarid/package_android-bionic.git test
+- docker run --rm
+    --volume ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}
+    --workdir ${TRAVIS_BUILD_DIR}/test
+    laarid/cross-build:${JOB_ARCH}
+    /bin/sh -c "mk-build-deps --host-arch ${JOB_ARCH} --install --remove --root-cmd sudo --tool 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends -y' && dpkg-buildpackage --host-arch ${JOB_ARCH} -i -us -uc -b"
 
 after_success:
-- if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${SKIP_TAG}" ]; then
+- if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
-    docker push laarid/cross-build:$ARCH;
+    docker push laarid/cross-build:${JOB_ARCH};
   fi
 
 notifications:
