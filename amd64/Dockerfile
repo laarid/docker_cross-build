@@ -1,1 +1,1 @@
-FROM laarid/devel:amd64
+FROM laarid/native-build:amd64

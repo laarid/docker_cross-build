@@ -33,9 +33,9 @@ script:
 - if [ -n "${JOB_QEMU_ARCH}" ]; then
     dpkg -s qemu-user-static;
     if [ ! -f "${JOB_DOCKERFILE_DIR}/qemu-${JOB_QEMU_ARCH}-static" ]; then
-      docker create --name devel_container laarid/devel:${JOB_ARCH};
-      docker cp devel_container:/usr/bin/qemu-${JOB_QEMU_ARCH}-static ${JOB_DOCKERFILE_DIR};
-      docker rm devel_container;
+      docker create --name native_container laarid/native-build:${JOB_ARCH};
+      docker cp native_container:/usr/bin/qemu-${JOB_QEMU_ARCH}-static ${JOB_DOCKERFILE_DIR};
+      docker rm native_container;
     fi;
     ${JOB_DOCKERFILE_DIR}/qemu-${JOB_QEMU_ARCH}-static --version;
   fi

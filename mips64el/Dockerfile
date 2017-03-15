@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM laarid/devel:amd64
+FROM laarid/native-build:amd64
 
 RUN (echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/main stretch main" | sudo tee /etc/apt/sources.list.d/bintray.list) \
 	&& sudo dpkg --add-architecture mips64el \
