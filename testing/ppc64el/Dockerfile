@@ -1,10 +1,10 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM laarid/native-build:stretch-amd64
+FROM laarid/native-build:testing-amd64
 
-RUN sudo dpkg --add-architecture mips64el \
+RUN sudo dpkg --add-architecture ppc64el \
 	&& sudo apt-get update -qq \
 	&& sudo apt-get upgrade -y \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
-		crossbuild-essential-mips64el
+		crossbuild-essential-ppc64el
 
-ADD qemu-mips64el-static /usr/bin/qemu-mips64el-static
+ADD qemu-ppc64le-static /usr/bin/qemu-ppc64le-static
