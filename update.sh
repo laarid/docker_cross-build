@@ -11,15 +11,12 @@ QEMU_ARCH_powerpc=ppc
 QEMU_ARCH_powerpcspe=ppc
 QEMU_ARCH_ppc64el=ppc64le
 
-SUITE=testing
-
 for f in $(find . -type f -name Dockerfile); do
   [ -n "$(head -n 1 $f | grep '^#.*GENERATED FROM')" ] || continue;
 
   arch=$(echo "$f" | cut -d/ -f2)
   eval "qemu_arch=\${QEMU_ARCH_${arch}:-${arch}}"
   cat Dockerfile.template | \
-    sed -e "s,@IMAGE_SUITE@,${SUITE},g" \
-      -e "s,@IMAGE_ARCH@,${arch},g" \
+    sed -e "s,@IMAGE_ARCH@,${arch},g" \
       -e "s,@QEMU_ARCH@,${qemu_arch},g" > "$f"
 done
