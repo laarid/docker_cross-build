@@ -40,12 +40,6 @@ script:
     ${JOB_ARCH}/qemu-${JOB_QEMU_ARCH}-static --version;
   fi
 - docker build -t laarid/cross-build:${JOB_ARCH} ${JOB_ARCH}
-- git clone -o laarid https://github.com/laarid/package_android-bionic.git test
-- docker run --rm
-    --volume ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR}
-    --workdir ${TRAVIS_BUILD_DIR}/test
-    laarid/cross-build:${JOB_ARCH}
-    /bin/sh -c "mk-build-deps --host-arch ${JOB_ARCH} --install --remove --root-cmd sudo --tool 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends -y' && dpkg-buildpackage --host-arch ${JOB_ARCH} -i -us -uc -b"
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
