@@ -11,6 +11,8 @@ QEMU_ARCH_powerpc=ppc
 QEMU_ARCH_powerpcspe=ppc
 QEMU_ARCH_ppc64el=ppc64le
 
+suite=$1
+
 for dockerfile in $(find . -type f -name Dockerfile); do
   [ -n "$(head -n 1 $dockerfile | grep '^#.*GENERATED FROM')" ] || continue;
 
@@ -19,7 +21,7 @@ for dockerfile in $(find . -type f -name Dockerfile); do
 
   cat > "$dockerfile" <<EOD
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM laarid/native-build:amd64
+FROM laarid/native-build:${suite}-amd64
 
 RUN sudo dpkg --add-architecture ${arch} \\
 	&& sudo apt-get update -qq \\

@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM laarid/native-build:amd64
+FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture armel \
 	&& sudo apt-get update -qq \
