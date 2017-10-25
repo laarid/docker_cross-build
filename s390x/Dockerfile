@@ -1,4 +1,6 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:buster-s390x AS debian
+
 FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture s390x \
@@ -7,4 +9,4 @@ RUN sudo dpkg --add-architecture s390x \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
 		crossbuild-essential-s390x
 
-ADD qemu-s390x-static /usr/bin/qemu-s390x-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin

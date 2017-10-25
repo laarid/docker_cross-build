@@ -1,4 +1,6 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:buster-mipsel AS debian
+
 FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture mipsel \
@@ -7,4 +9,4 @@ RUN sudo dpkg --add-architecture mipsel \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
 		crossbuild-essential-mipsel
 
-ADD qemu-mipsel-static /usr/bin/qemu-mipsel-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin

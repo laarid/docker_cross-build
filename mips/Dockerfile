@@ -1,4 +1,6 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:buster-mips AS debian
+
 FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture mips \
@@ -7,4 +9,4 @@ RUN sudo dpkg --add-architecture mips \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
 		crossbuild-essential-mips
 
-ADD qemu-mips-static /usr/bin/qemu-mips-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin

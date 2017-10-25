@@ -21,6 +21,8 @@ for dockerfile in $(find . -type f -name Dockerfile); do
 
   cat > "$dockerfile" <<EOD
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:${suite}-${arch} AS debian
+
 FROM laarid/native-build:${suite}-amd64
 
 RUN sudo dpkg --add-architecture ${arch} \\
@@ -29,7 +31,7 @@ RUN sudo dpkg --add-architecture ${arch} \\
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \\
 		crossbuild-essential-${arch}
 
-ADD qemu-${qemu_arch}-static /usr/bin/qemu-${qemu_arch}-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin
 EOD
 
 done

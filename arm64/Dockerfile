@@ -1,4 +1,6 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:buster-arm64 AS debian
+
 FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture arm64 \
@@ -7,4 +9,4 @@ RUN sudo dpkg --add-architecture arm64 \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
 		crossbuild-essential-arm64
 
-ADD qemu-aarch64-static /usr/bin/qemu-aarch64-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin

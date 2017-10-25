@@ -1,4 +1,6 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
+FROM vicamo/debian:buster-armhf AS debian
+
 FROM laarid/native-build:buster-amd64
 
 RUN sudo dpkg --add-architecture armhf \
@@ -7,4 +9,4 @@ RUN sudo dpkg --add-architecture armhf \
 	&& sudo apt-get install --no-install-recommends -y --allow-unauthenticated \
 		crossbuild-essential-armhf
 
-ADD qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=debian /usr/bin/qemu-*-static /usr/bin
