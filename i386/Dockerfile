@@ -1,1 +1,1 @@
-FROM laarid/native-build:i386
+FROM laarid/native-build:buster-i386
