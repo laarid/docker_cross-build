@@ -1,1 +1,1 @@
-FROM laarid/native-build:sid-i386
+FROM laarid/native-build:experimental-i386

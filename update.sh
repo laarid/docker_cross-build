@@ -21,7 +21,7 @@ for dockerfile in $(find . -type f -name Dockerfile); do
 
   cat > "$dockerfile" <<EOD
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/debian:${suite}-${arch} AS debian
+FROM vicamo/debian:sid-${arch} AS debian
 
 FROM laarid/native-build:${suite}-amd64
 

@@ -1,7 +1,7 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
 FROM vicamo/debian:sid-ppc64el AS debian
 
-FROM laarid/native-build:sid-amd64
+FROM laarid/native-build:experimental-amd64
 
 RUN sudo dpkg --add-architecture ppc64el \
 	&& sudo apt-get update -qq \
