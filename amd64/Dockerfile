@@ -1,1 +1,1 @@
-FROM laarid/native-build:buster-amd64
+FROM laarid/native-build:sid-amd64

@@ -1,7 +1,7 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/debian:buster-s390x AS debian
+FROM vicamo/debian:sid-s390x AS debian
 
-FROM laarid/native-build:buster-amd64
+FROM laarid/native-build:sid-amd64
 
 RUN sudo dpkg --add-architecture s390x \
 	&& sudo apt-get update -qq \
